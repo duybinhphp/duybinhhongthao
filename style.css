@@ -424,7 +424,6 @@
 	height:100% !important;
 	object-fit:cover !important;
 	display:block;
-}
   }
   .gallery-nav{
     position:absolute;top:50%;transform:translateY(-50%);
