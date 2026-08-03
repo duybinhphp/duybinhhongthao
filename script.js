@@ -27,7 +27,7 @@
   });
 
   // ---------- Countdown ----------
-  const weddingDate = new Date('2026-12-12T08:00:00+07:00').getTime();
+  const weddingDate = new Date('2026-11-01T08:00:00+07:00').getTime();
   function updateCountdown(){
     const now = Date.now();
     const diff = Math.max(0, weddingDate - now);
