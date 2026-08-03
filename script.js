@@ -27,7 +27,7 @@
   });
 
   // ---------- Countdown ----------
-  const weddingDate = new Date('2026-11-01T08:00:00+07:00').getTime();
+  const weddingDate = new Date('2026-12-12T08:00:00+07:00').getTime();
   function updateCountdown(){
     const now = Date.now();
     const diff = Math.max(0, weddingDate - now);
@@ -91,16 +91,55 @@
       galleryTrack.scrollBy({ left: slideStep(), behavior: 'smooth' });
     });
 
-    galleryItems.forEach(item => {
+    // ---------- Lightbox: fullscreen photo viewer ----------
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContent = document.getElementById('lightbox-content');
+    let lightboxIndex = 0;
+
+    function renderLightbox(){
+      lightboxContent.innerHTML = galleryItems[lightboxIndex].innerHTML;
+    }
+    function openLightbox(i){
+      lightboxIndex = i;
+      renderLightbox();
+      lightbox.classList.add('show');
+    }
+    function closeLightbox(){
+      lightbox.classList.remove('show');
+    }
+    function showPrev(){
+      lightboxIndex = (lightboxIndex - 1 + total) % total;
+      renderLightbox();
+    }
+    function showNext(){
+      lightboxIndex = (lightboxIndex + 1) % total;
+      renderLightbox();
+    }
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox-prev').addEventListener('click', showPrev);
+    document.getElementById('lightbox-next').addEventListener('click', showNext);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('show')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showPrev();
+      if (e.key === 'ArrowRight') showNext();
+    });
+
+    galleryItems.forEach((item, i) => {
       item.addEventListener('click', () => {
-        item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        if (dragMoved) return; // ignore click right after a drag-scroll gesture
+        openLightbox(i);
       });
     });
 
     // Mouse drag-to-scroll for desktop (touch swipe works natively on mobile)
-    let isDragging = false, dragStartX = 0, dragScrollLeft = 0;
+    let isDragging = false, dragStartX = 0, dragScrollLeft = 0, dragMoved = false;
     galleryTrack.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse') return; // let touch use native swipe/tap, untouched
       isDragging = true;
+      dragMoved = false;
       galleryTrack.classList.add('dragging');
       dragStartX = e.pageX;
       dragScrollLeft = galleryTrack.scrollLeft;
@@ -108,6 +147,7 @@
     });
     galleryTrack.addEventListener('pointermove', e => {
       if (!isDragging) return;
+      if (Math.abs(e.pageX - dragStartX) > 6) dragMoved = true;
       galleryTrack.scrollLeft = dragScrollLeft - (e.pageX - dragStartX);
     });
     ['pointerup', 'pointercancel', 'pointerleave'].forEach(evt => {
