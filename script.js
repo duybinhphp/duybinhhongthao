@@ -1,4 +1,4 @@
-  // ---------- Envelope open ----------
+// ---------- Envelope open ----------
   const envelope = document.getElementById('envelope');
   const envScreen = document.getElementById('envelope-screen');
   const nav = document.getElementById('nav');
@@ -6,11 +6,11 @@
 
   envelope.addEventListener('click', () => {
     envelope.classList.add('open');
+    music.play().catch(()=>{});
+    document.getElementById('music-toggle').classList.add('spin');
     setTimeout(() => {
       envScreen.classList.add('opened');
       nav.classList.add('show');
-      music.play().catch(()=>{});
-      document.getElementById('music-toggle').classList.add('spin');
     }, 750);
   });
 
@@ -27,7 +27,7 @@
   });
 
   // ---------- Countdown ----------
-  const weddingDate = new Date('2026-12-12T08:00:00+07:00').getTime();
+  const weddingDate = new Date('2026-11-01T08:00:00+07:00').getTime();
   function updateCountdown(){
     const now = Date.now();
     const diff = Math.max(0, weddingDate - now);
@@ -120,6 +120,19 @@
     window.addEventListener('load', updateActiveSlide);
     setTimeout(updateActiveSlide, 300);
   }
+
+  // ---------- Gift boxes: tap to open and reveal QR code ----------
+  document.querySelectorAll('.gift-box-wrap').forEach(box => {
+    box.addEventListener('click', () => {
+      box.classList.toggle('opened');
+      const hint = box.nextElementSibling;
+      if (hint && hint.classList.contains('gift-hint')) {
+        hint.textContent = box.classList.contains('opened')
+          ? 'Chạm để đóng hộp quà'
+          : 'Chạm để mở hộp quà';
+      }
+    });
+  });
 
   // ---------- RSVP form ----------
   document.getElementById('rsvp-form').addEventListener('submit', function(e){
