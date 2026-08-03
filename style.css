@@ -385,7 +385,7 @@
     overflow-x:auto;
     scroll-snap-type:x mandatory;
     scroll-behavior:smooth;
-    padding:0 calc((100% - min(240px,66vw)) / 2);
+    padding:0 calc((100% - min(312px,86vw)) / 2);
     -ms-overflow-style:none;
     scrollbar-width:none;
     cursor:grab;
@@ -393,21 +393,22 @@
   .gallery-track.dragging{cursor:grabbing;scroll-snap-type:none;}
   .gallery-track::-webkit-scrollbar{display:none;}
   .gal-item{
-    flex:0 0 auto;
-    width:min(240px,66vw);
-    aspect-ratio:3/4;
-    scroll-snap-align:center;
-    background:linear-gradient(150deg,rgba(216,189,142,0.28),rgba(217,169,160,0.2));
-    border:1px solid rgba(216,189,142,0.35);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold-light);font-size:14px;
-    text-align:center;padding:10px;
-    opacity:0.5;
-    transform:scale(0.88);
-    transition:opacity .4s ease, transform .4s ease, border-color .4s ease, box-shadow .4s ease;
-    box-shadow:0 16px 30px rgba(0,0,0,0.3);
-    cursor:pointer;
-    user-select:none;
+	flex:0 0 auto;
+	width:min(312px,86vw);   /* trước: min(240px,66vw) */
+	aspect-ratio:3/4;
+	scroll-snap-align:center;
+	background:linear-gradient(150deg,rgba(216,189,142,0.28),rgba(217,169,160,0.2));
+	border:1px solid rgba(216,189,142,0.35);
+	display:flex;align-items:center;justify-content:center;
+	font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold-light);font-size:14px;
+	text-align:center;padding:10px;
+	opacity:0.5;
+	transform:scale(0.88);
+	transition:opacity .4s ease, transform .4s ease, border-color .4s ease, box-shadow .4s ease;
+	ox-shadow:0 16px 30px rgba(0,0,0,0.3);
+	cursor:pointer;
+	user-select:none;
+	overflow:hidden;   /* ← thêm dòng này */
   }
   .gal-item.active{
     opacity:1;
@@ -415,12 +416,15 @@
     border-color:var(--gold);
     box-shadow:0 26px 50px rgba(0,0,0,0.45), 0 0 0 1px rgba(184,147,90,0.5);
   }
+  .gal-item:has(img){
+  padding:0;
+}
   .gal-item img{
-    width:calc(100% + 20px);
-    height:calc(100% + 20px);
-    margin:-10px;
-    object-fit:cover;
-    display:block;
+	width:100% !important;
+	height:100% !important;
+	object-fit:cover !important;
+	display:block;
+}
   }
   .gallery-nav{
     position:absolute;top:50%;transform:translateY(-50%);
