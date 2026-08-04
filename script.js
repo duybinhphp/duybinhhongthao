@@ -91,19 +91,35 @@
       galleryTrack.scrollBy({ left: slideStep(), behavior: 'smooth' });
     });
 
-    // ---------- Lightbox: fullscreen photo viewer ----------
+   // ---------- Lightbox: fullscreen photo viewer ----------
     const lightbox = document.getElementById('lightbox');
     const lightboxContent = document.getElementById('lightbox-content');
     let lightboxIndex = 0;
 
     function renderLightbox(){
-      lightboxContent.innerHTML = galleryItems[lightboxIndex].innerHTML;
+      const sourceItem = galleryItems[lightboxIndex];
+      const sourceImg = sourceItem.querySelector('img');
+      if (sourceImg) {
+        const freshImg = document.createElement('img');
+        freshImg.src = sourceImg.getAttribute('src');
+        freshImg.alt = sourceImg.getAttribute('alt') || '';
+        lightboxContent.innerHTML = '';
+        lightboxContent.appendChild(freshImg);
+      } else {
+        lightboxContent.innerHTML = sourceItem.innerHTML;
+      }
     }
     function switchLightbox(){
       lightboxContent.style.opacity = '0';
       setTimeout(() => {
         renderLightbox();
-        lightboxContent.style.opacity = '1';
+        const img = lightboxContent.querySelector('img');
+        if (img && !img.complete) {
+          img.addEventListener('load', () => { lightboxContent.style.opacity = '1'; }, { once: true });
+          img.addEventListener('error', () => { lightboxContent.style.opacity = '1'; }, { once: true });
+        } else {
+          lightboxContent.style.opacity = '1';
+        }
       }, 180);
     }
     function openLightbox(i){
