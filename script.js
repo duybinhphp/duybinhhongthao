@@ -97,7 +97,17 @@
     let lightboxIndex = 0;
 
     function renderLightbox(){
-      lightboxContent.innerHTML = galleryItems[lightboxIndex].innerHTML;
+      const sourceItem = galleryItems[lightboxIndex];
+      const sourceImg = sourceItem.querySelector('img');
+      if (sourceImg) {
+        const freshImg = document.createElement('img');
+        freshImg.src = sourceImg.getAttribute('src');
+        freshImg.alt = sourceImg.getAttribute('alt') || '';
+        lightboxContent.innerHTML = '';
+        lightboxContent.appendChild(freshImg);
+      } else {
+        lightboxContent.innerHTML = sourceItem.innerHTML;
+      }
     }
     function switchLightbox(){
       lightboxContent.style.opacity = '0';
