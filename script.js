@@ -99,13 +99,6 @@
     function renderLightbox(){
       lightboxContent.innerHTML = galleryItems[lightboxIndex].innerHTML;
     }
-    function switchLightbox(){
-      lightboxContent.style.opacity = '0';
-      setTimeout(() => {
-        renderLightbox();
-        lightboxContent.style.opacity = '1';
-      }, 180);
-    }
     function openLightbox(i){
       lightboxIndex = i;
       renderLightbox();
@@ -116,11 +109,11 @@
     }
     function showPrev(){
       lightboxIndex = (lightboxIndex - 1 + total) % total;
-      switchLightbox();
+      renderLightbox();
     }
     function showNext(){
       lightboxIndex = (lightboxIndex + 1) % total;
-      switchLightbox();
+      renderLightbox();
     }
 
     document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
