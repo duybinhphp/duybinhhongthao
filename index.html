@@ -187,29 +187,42 @@
     <div class="eyebrow">Xác nhận tham dự</div>
     <h2 style="font-size:40px;color:var(--jade);margin-top:10px;">Bạn sẽ đến chứ?</h2>
     <p style="margin-top:14px;color:#5b5346;font-size:14px;">Vui lòng xác nhận trước ngày 22.10.2026 để chúng tôi chuẩn bị chu đáo nhất.</p>
-    <form id="rsvp-form" style="margin-top:44px;text-align:left;">
-      <div class="form-row">
-        <label for="rsvp-name">Họ và tên</label>
-        <input type="text" id="rsvp-name" required placeholder="Nguyễn Văn A">
+    <div class="rsvp-card">
+      <form id="rsvp-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" style="text-align:left;">
+        <div class="form-row">
+          <label for="rsvp-name">Họ và tên</label>
+          <input type="text" id="rsvp-name" name="Họ và tên" required placeholder="Nguyễn Văn A">
+        </div>
+        <div class="form-row">
+          <label for="rsvp-attend">Bạn có thể tham dự?</label>
+          <select id="rsvp-attend" name="Tham dự">
+            <option value="Có, tôi sẽ tham dự">Có, tôi sẽ tham dự</option>
+            <option value="Rất tiếc, tôi không thể tham dự">Rất tiếc, tôi không thể tham dự</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="rsvp-guests">Số lượng khách đi cùng</label>
+          <input type="number" id="rsvp-guests" name="Số khách đi cùng" min="0" value="0">
+        </div>
+        <div class="form-row">
+          <label for="rsvp-note">Lời chúc</label>
+          <textarea id="rsvp-note" name="Lời chúc" placeholder="Gửi lời chúc đến cô dâu chú rể..."></textarea>
+        </div>
+        <button type="submit">Gửi xác nhận</button>
+      </form>
+      <div id="rsvp-error" style="display:none;margin-top:16px;color:#b3453f;font-size:13px;">Gửi không thành công, vui lòng thử lại hoặc liên hệ trực tiếp.</div>
+      <div id="rsvp-msg">Cảm ơn bạn đã xác nhận! Hẹn gặp bạn trong ngày trọng đại của chúng mình. 💛</div>
+    </div>
+
+    <div class="wishes-wall">
+      <div class="wishes-wall-title">Lời chúc từ mọi người</div>
+      <div class="wishes-viewer">
+        <button class="wishes-nav prev" id="wishes-prev" aria-label="Lời chúc trước" style="display:none;">&#10094;</button>
+        <div id="wishes-list"><p class="wishes-empty">Chưa có lời chúc nào — hãy là người đầu tiên!</p></div>
+        <button class="wishes-nav next" id="wishes-next" aria-label="Lời chúc sau" style="display:none;">&#10095;</button>
       </div>
-      <div class="form-row">
-        <label for="rsvp-attend">Bạn có thể tham dự?</label>
-        <select id="rsvp-attend">
-          <option value="yes">Có, tôi sẽ tham dự</option>
-          <option value="no">Rất tiếc, tôi không thể tham dự</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="rsvp-guests">Số lượng khách đi cùng</label>
-        <input type="number" id="rsvp-guests" min="0" value="0">
-      </div>
-      <div class="form-row">
-        <label for="rsvp-note">Lời chúc</label>
-        <textarea id="rsvp-note" placeholder="Gửi lời chúc đến cô dâu chú rể..."></textarea>
-      </div>
-      <button type="submit">Gửi xác nhận</button>
-    </form>
-    <div id="rsvp-msg">Cảm ơn bạn đã xác nhận! Hẹn gặp bạn trong ngày trọng đại của chúng tôi. 💛</div>
+      <div class="wishes-counter" id="wishes-counter"></div>
+    </div>
   </div>
 </section>
 
@@ -261,6 +274,7 @@
   <!-- Thay src bằng file nhạc nền của bạn -->
   <source src="nhacnen.mp3" type="audio/mpeg">
 </audio>
+
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightbox-close" aria-label="Đóng">&times;</button>
   <button class="lightbox-nav prev" id="lightbox-prev" aria-label="Ảnh trước">&#10094;</button>
@@ -268,6 +282,8 @@
   <button class="lightbox-nav next" id="lightbox-next" aria-label="Ảnh sau">&#10095;</button>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
 <script src="script.js"></script>
 
 </body>

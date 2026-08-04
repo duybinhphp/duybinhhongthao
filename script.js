@@ -173,11 +173,134 @@
       }
     });
   });
+  
+  
+  // ---------- Live wishes wall (Firebase) ----------
+  // Dán cấu hình Firebase của bạn vào đây (xem hướng dẫn trong HUONG-DAN-LOI-CHUC.md)
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+	apiKey: "AIzaSyB4F2ArqGvXkbZes2ByNi-Cm8rxlPurfsw",
+	authDomain: "mywedding-83971.firebaseapp.com",
+	databaseURL: "https://mywedding-83971-default-rtdb.asia-southeast1.firebasedatabase.app",
+	projectId: "mywedding-83971",
+	storageBucket: "mywedding-83971.firebasestorage.app",
+	messagingSenderId: "438823250851",
+	appId: "1:438823250851:web:b9215085ec1fbaea570816",
+	measurementId: "G-67J5YG0B3V"
+  };
+
+  let wishesRef = null;
+  let wishesList = [];
+  let wishIndex = 0;
+  let wishAutoTimer = null;
+
+  const wishesListEl = document.getElementById('wishes-list');
+  const wishesPrevBtn = document.getElementById('wishes-prev');
+  const wishesNextBtn = document.getElementById('wishes-next');
+  const wishesCounterEl = document.getElementById('wishes-counter');
+
+  function renderWish(){
+    if (!wishesList.length) {
+      wishesListEl.innerHTML = '<p class="wishes-empty">Chưa có lời chúc nào — hãy là người đầu tiên!</p>';
+      wishesPrevBtn.style.display = 'none';
+      wishesNextBtn.style.display = 'none';
+      wishesCounterEl.textContent = '';
+      return;
+    }
+    const w = wishesList[wishIndex];
+    const name = w.name || 'Ẩn danh';
+    const initial = name.trim().charAt(0).toUpperCase();
+    wishesListEl.innerHTML = `
+      <div class="wish-card">
+        <div class="wish-avatar">${escapeHtml(initial)}</div>
+        <div class="wish-body">
+          <div class="wish-name">${escapeHtml(name)}</div>
+          <div class="wish-attend">${escapeHtml(w.attend || '')}</div>
+          ${w.note ? `<div class="wish-note">${escapeHtml(w.note)}</div>` : ''}
+        </div>
+      </div>
+    `;
+    requestAnimationFrame(() => {
+      const card = wishesListEl.querySelector('.wish-card');
+      if (card) card.classList.add('show');
+    });
+    const showNav = wishesList.length > 1;
+    wishesPrevBtn.style.display = showNav ? 'flex' : 'none';
+    wishesNextBtn.style.display = showNav ? 'flex' : 'none';
+    wishesCounterEl.textContent = `${wishIndex + 1} / ${wishesList.length}`;
+  }
+
+  function goToWish(i){
+    if (!wishesList.length) return;
+    wishIndex = (i + wishesList.length) % wishesList.length;
+    renderWish();
+  }
+
+  function restartAutoRotate(){
+    clearInterval(wishAutoTimer);
+    if (wishesList.length > 1) {
+      wishAutoTimer = setInterval(() => goToWish(wishIndex + 1), 5000);
+    }
+  }
+
+  wishesPrevBtn.addEventListener('click', () => { goToWish(wishIndex - 1); restartAutoRotate(); });
+  wishesNextBtn.addEventListener('click', () => { goToWish(wishIndex + 1); restartAutoRotate(); });
+
+  if (window.firebase && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    firebase.initializeApp(firebaseConfig);
+    wishesRef = firebase.database().ref('wishes');
+
+    wishesRef.orderByChild('time').on('value', snapshot => {
+      const data = snapshot.val();
+      wishesList = data ? Object.values(data).sort((a, b) => (b.time || 0) - (a.time || 0)) : [];
+      wishIndex = 0;
+      renderWish();
+      restartAutoRotate();
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
 
   // ---------- RSVP form ----------
-  document.getElementById('rsvp-form').addEventListener('submit', function(e){
+  const rsvpForm = document.getElementById('rsvp-form');
+  rsvpForm.addEventListener('submit', function(e){
     e.preventDefault();
-    // TODO: thay bằng gọi API / Google Form / email thật của bạn
-    this.style.display = 'none';
-    document.getElementById('rsvp-msg').style.display = 'block';
+    const errorEl = document.getElementById('rsvp-error');
+    errorEl.style.display = 'none';
+
+    const wishData = {
+      name: document.getElementById('rsvp-name').value,
+      attend: document.getElementById('rsvp-attend').value,
+      guests: document.getElementById('rsvp-guests').value,
+      note: document.getElementById('rsvp-note').value,
+      time: Date.now()
+    };
+
+    function showSuccess(){
+      rsvpForm.style.display = 'none';
+      document.getElementById('rsvp-msg').style.display = 'block';
+    }
+
+    // Gửi email thông báo qua Formspree — chỉ là kênh phụ để bạn nhận email,
+    // lỗi ở đây (ví dụ chưa dán link Formspree thật) sẽ KHÔNG báo cho khách,
+    // vì lời chúc vẫn được lưu và hiển thị lên web bình thường.
+    fetch(rsvpForm.action, {
+      method: 'POST',
+      body: new FormData(rsvpForm),
+      headers: { 'Accept': 'application/json' }
+    }).catch(() => {});
+
+    if (wishesRef) {
+      // Có Firebase: đây là kênh chính quyết định thành công/thất bại
+      wishesRef.push(wishData)
+        .then(showSuccess)
+        .catch(() => { errorEl.style.display = 'block'; });
+    } else {
+      // Chưa cấu hình Firebase: vẫn báo thành công để không chặn khách
+      showSuccess();
+    }
   });
