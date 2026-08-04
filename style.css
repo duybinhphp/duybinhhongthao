@@ -653,9 +653,9 @@
   }
   .lightbox-content img{
     display:block;
-    max-width:96vw !important;max-height:88vh !important;
-    width:auto !important;height:auto !important;
-    object-fit:contain !important;
+    max-width:96vw;max-height:88vh;
+    width:auto;height:auto;
+    object-fit:contain;
   }
   .lightbox-close{
     position:absolute;top:18px;right:18px;
